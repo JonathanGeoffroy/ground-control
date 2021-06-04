@@ -2,6 +2,7 @@ package ground.control.planet.controller;
 
 import ground.control.planet.dto.CreatePlanetDTO;
 import ground.control.planet.entities.Planet;
+import ground.control.planet.exception.NotFoundEntityException;
 import ground.control.planet.service.PlanetService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,10 @@ public class PlanetController {
     @ResponseStatus(HttpStatus.CREATED)
     public Planet create(@Valid @RequestBody CreatePlanetDTO dto) {
         return service.create(modelMapper.map(dto, Planet.class));
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id) throws NotFoundEntityException {
+        service.deleteById(id);
     }
 }
