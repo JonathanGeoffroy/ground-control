@@ -1,6 +1,7 @@
 package ground.control.planet.controller;
 
 import ground.control.planet.dto.CreatePlanetDTO;
+import ground.control.planet.dto.PlanetDTO;
 import ground.control.planet.entities.Planet;
 import ground.control.planet.exception.NotFoundEntityException;
 import ground.control.planet.service.PlanetService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController()
 @RequestMapping("/planet")
@@ -25,10 +27,18 @@ public class PlanetController {
     }
 
     @GetMapping
-    public List<Planet> getAll() {
-        return service.getAll();
+    public List<PlanetDTO> getAll() {
+        return service.getAll()
+                .stream()
+                .map(planet -> modelMapper.map(planet, PlanetDTO.class))
+                .collect(Collectors.toList());
     }
 
+
+    @GetMapping("/{id}")
+    public void getDetails(@PathVariable String id) throws NotFoundEntityException {
+        service.deleteById(id);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

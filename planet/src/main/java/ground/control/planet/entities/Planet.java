@@ -20,4 +20,11 @@ public class Planet {
 
     @Column
     private String name;
+
+    @Column
+    private Double size;
+
+    @Column
+    private Double gravity;
+
 }

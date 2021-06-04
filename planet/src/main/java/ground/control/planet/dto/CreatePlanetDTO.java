@@ -17,4 +17,8 @@ public class CreatePlanetDTO {
     @NotNull
     @NotBlank
     private String name;
+
+    private Double gravity;
+
+    private Double size;
 }
