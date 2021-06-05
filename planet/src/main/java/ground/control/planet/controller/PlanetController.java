@@ -2,6 +2,7 @@ package ground.control.planet.controller;
 
 import ground.control.planet.dto.CreatePlanetDTO;
 import ground.control.planet.dto.PlanetDTO;
+import ground.control.planet.dto.PlanetDetailsDTO;
 import ground.control.planet.entities.Planet;
 import ground.control.planet.exception.NotFoundEntityException;
 import ground.control.planet.service.PlanetService;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
 @RestController()
 @RequestMapping("/planet")
 public class PlanetController {
-    private PlanetService service;
-    private ModelMapper modelMapper;
+    private final PlanetService service;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public PlanetController(PlanetService service, ModelMapper modelMapper) {
@@ -36,14 +37,16 @@ public class PlanetController {
 
 
     @GetMapping("/{id}")
-    public void getDetails(@PathVariable String id) throws NotFoundEntityException {
-        service.deleteById(id);
+    public PlanetDetailsDTO getDetails(@PathVariable String id) throws NotFoundEntityException {
+        var planet = service.findById(id);
+        return modelMapper.map(planet, PlanetDetailsDTO.class);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Planet create(@Valid @RequestBody CreatePlanetDTO dto) {
-        return service.create(modelMapper.map(dto, Planet.class));
+    public PlanetDetailsDTO create(@Valid @RequestBody CreatePlanetDTO dto) {
+        var planet = service.create(modelMapper.map(dto, Planet.class));
+        return modelMapper.map(planet, PlanetDetailsDTO.class);
     }
 
     @DeleteMapping("/{id}")
