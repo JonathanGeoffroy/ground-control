@@ -13,8 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,6 +55,7 @@ class PlanetRestTest {
                 .andExpect(jsonPath("$[0].name", is("Earth")))
                 .andExpect(jsonPath("$[0].gravity", is(9.807)))
                 .andExpect(jsonPath("$[0].size", is(6371.)))
+                .andExpect(jsonPath("$[0].links[0].href", endsWith("/planet/earth-planet")))
                 .andExpect(jsonPath("$.moons").doesNotExist());
     }
 

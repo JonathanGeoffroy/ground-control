@@ -15,6 +15,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController()
 @RequestMapping("/planet")
 public class PlanetController {
@@ -27,11 +30,13 @@ public class PlanetController {
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/hal+json")
     public List<PlanetDTO> getAll() {
         return service.getAll()
-                .stream()
-                .map(planet -> modelMapper.map(planet, PlanetDTO.class))
+                .parallelStream()
+                .map(planet -> modelMapper.map(planet, PlanetDTO.class)
+                        .add(linkTo(methodOn(PlanetController.class).getDetails(planet.getId())).withSelfRel())
+                )
                 .collect(Collectors.toList());
     }
 
