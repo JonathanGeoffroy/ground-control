@@ -22,7 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/planet")
-@Tag(name = "Planet", description = "the Planet API")
+@Tag(name = "Index", description = "the Index API")
 public class PlanetController {
     private final PlanetService service;
     private final ModelMapper modelMapper;

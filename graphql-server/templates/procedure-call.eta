@@ -1,0 +1,40 @@
+<%
+const { utils, route, apiClassName, config } = it;
+const { moduleName } = route;
+const { _ } = utils;
+const { parameters, path, query, method, payload } = route.request;
+const { type } = route.response;
+const routeDocs = includeFile("@base/route-docs", { config, route, utils });
+const pathParams = _.values(parameters);
+
+const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${!defaultValue && optional ? '?' : ''}: ${type}${defaultValue ? ` = ${defaultValue}` : ''}`;
+
+const rawWrapperArgs = _.compact([
+    ...pathParams,
+    query,
+    payload
+])
+
+const wrapperArgs = _
+    // Sort by optionality
+    .sortBy(rawWrapperArgs, [o => o.optional])
+    .map(argToTmpl)
+    .join(', ')
+
+const describeReturnType = () => {
+    return `Promise<${type}>`
+}
+
+%>
+/**
+<%~ routeDocs.description %>
+
+ * <% /* Here you can add some other JSDoc tags */ %>
+
+<%~ routeDocs.lines %>
+ */
+async <%~ route.routeName.usage == "delete" ? `${route.routeName.usage}${apiClassName}` : route.routeName.usage %>(<%~ wrapperArgs %>): <%~ describeReturnType() %> {
+    return this.<%~method %><<%~ type %>>(`<%~ path %>`);
+}
+
+

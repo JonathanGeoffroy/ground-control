@@ -1,0 +1,25 @@
+<%
+const { utils, route, config, modelTypes } = it;
+const { _, classNameCase, require } = utils;
+const apiClassName = classNameCase(route.moduleName);
+const routes = route.routes;
+const dataContracts = _.map(modelTypes, "name");
+%>
+
+import { RESTDataSource } from 'apollo-datasource-rest'
+
+<% if (dataContracts.length) { %>
+import { <%~ dataContracts.join(", ") %> } from "./<%~ config.fileNames.dataContracts %>"
+<% } %>
+
+export default class <%= apiClassName %> extends RESTDataSource {
+  constructor() {
+    super();
+    this.baseURL = 'http://localhost:8080';
+  }
+
+  <% routes.forEach((route) => { %>
+    <%~ includeFile('./procedure-call.eta', { ...it, route, apiClassName }) %>
+  <% }) %>
+
+}

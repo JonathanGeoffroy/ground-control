@@ -1,0 +1,14 @@
+overwrite: true
+schema: "./src/schema/index.graphql"
+documents: []
+generates:
+  src/__generated__/graphql.ts:
+    config:
+      mappers:
+        Planet: ../__generated__/dataSources/Planet/data-contracts#PlanetDTO
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"

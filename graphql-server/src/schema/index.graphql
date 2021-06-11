@@ -1,0 +1,12 @@
+type Moon {
+    name: String
+}
+
+type Planet {
+    name: String!
+    gravity: Float
+    moons: [Moon]
+}
+type Query {
+    planets: [Planet]
+}
