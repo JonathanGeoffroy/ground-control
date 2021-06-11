@@ -10,7 +10,7 @@
     "lint:fix": "npm run lint -- --fix",
     "generate": "npm run generate:api && npm run generate:codegen",
     "generate:codegen": "graphql-codegen --config codegen.yml",
-    "generate:api": "swagger-typescript-api -p http://localhost:8080/api-docs -o src/__generated__/dataSources/Planet --templates=./templates/ --modular",
+    "generate:api": "swagger-typescript-api -p ../planet/target/docs/schema.json -o src/__generated__/dataSources/Planet --templates=./templates/ --modular",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ci": "npm run generate && npm run lint && npm run test && npm run build"
   },
