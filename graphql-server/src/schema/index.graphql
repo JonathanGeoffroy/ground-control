@@ -1,10 +1,13 @@
 type Moon {
+    id: ID!
     name: String
 }
 
 type Planet {
+    id: ID!
     name: String!
     gravity: Float
+    size: Float
     moons: [Moon]
 }
 type Query {

@@ -7,6 +7,7 @@ const planets: PlanetDetailsDTO[] = [
     id: 'mars-id',
     name: 'Mars',
     gravity: 1.2,
+    size: 2345.11,
     moons: [
       {
         id: 'mars-moon-id',
