@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 
 @NamedEntityGraph(
@@ -23,6 +24,11 @@ public class Planet {
     public static final String PLANET_DETAILS_GRAPH = "planet-details-graph";
 
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     private String id;
 
     @Column
@@ -35,5 +41,5 @@ public class Planet {
     private Double gravity;
 
     @OneToMany(mappedBy = "planet", cascade = CascadeType.ALL)
-    private List<Moon> moons;
+    private Set<Moon> moons;
 }

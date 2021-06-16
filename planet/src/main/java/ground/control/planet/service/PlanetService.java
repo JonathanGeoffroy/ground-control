@@ -1,5 +1,6 @@
 package ground.control.planet.service;
 
+import ground.control.planet.entities.Moon;
 import ground.control.planet.entities.Planet;
 import ground.control.planet.exception.NotFoundEntityException;
 import ground.control.planet.repository.PlanetRepository;
@@ -10,19 +11,14 @@ import org.springframework.util.CollectionUtils;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.UUID.randomUUID;
 
 @Service
 public class PlanetService {
     private final PlanetRepository repository;
-    private final MoonService moonService;
 
     @Autowired
-    public PlanetService(PlanetRepository repository, MoonService moonService) {
+    public PlanetService(PlanetRepository repository) {
         this.repository = repository;
-        this.moonService = moonService;
     }
 
     public List<Planet> getAll() {
@@ -40,15 +36,11 @@ public class PlanetService {
 
     @Transactional
     public Planet create(Planet planet) {
-        planet.setId(randomUUID().toString());
         if (!CollectionUtils.isEmpty(planet.getMoons())) {
-            planet.setMoons(
-                    planet.getMoons()
-                            .parallelStream()
-                            .map(moonService::create)
-                            .collect(Collectors.toList()));
+            for (Moon moon : planet.getMoons()) {
+                moon.setPlanet(planet);
+            }
         }
-
         return repository.save(planet);
     }
 
