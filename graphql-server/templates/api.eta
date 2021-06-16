@@ -11,11 +11,12 @@ import { RESTDataSource } from 'apollo-datasource-rest'
 <% if (dataContracts.length) { %>
 import { <%~ dataContracts.join(", ") %> } from "./<%~ config.fileNames.dataContracts %>"
 <% } %>
+import config from '../../../config';
 
 export default class <%= apiClassName %> extends RESTDataSource {
   constructor() {
     super();
-    this.baseURL = 'http://localhost:8080';
+    this.baseURL = config.SERVICE_<%= apiClassName.toUpperCase() %>;
   }
 
   <% routes.forEach((route) => { %>

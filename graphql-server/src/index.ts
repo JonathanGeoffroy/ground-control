@@ -1,7 +1,8 @@
 import server from './server'
-
-server()
+server({ playground: true })
   .listen()
-  .then(({ url }: { url: any }) => {
+  .then(({
+    url
+  }: { url: string }) => {
     console.log(`🚀  Server ready at ${url}`)
   })

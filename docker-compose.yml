@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  planet:
+    build: planet
+    ports:
+      - "8080:8080"
+  graphql:
+    depends_on:
+      - ground-control_planet
+    build: graphql-server
+    ports:
+      - 4000:4000
