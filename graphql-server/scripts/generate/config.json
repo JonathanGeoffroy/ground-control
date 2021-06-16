@@ -1,0 +1,8 @@
+{
+  "apis": [
+    {
+      "input": "./schemas/planet.json",
+      "name": "Planet"
+    }
+  ]
+}

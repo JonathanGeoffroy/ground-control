@@ -3,3 +3,4 @@ node_modules
 dist
 test
 graphql.schema.json
+schemas
