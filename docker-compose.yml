@@ -1,6 +1,18 @@
 version: "3.9"
 services:
+  planet-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: planet
+      POSTGRES_USER: planet
+      POSTGRES_DB: planet
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
   planet:
+    depends_on:
+      - planet-db
     build: planet
     ports:
       - "8080:8080"

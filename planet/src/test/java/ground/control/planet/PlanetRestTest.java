@@ -42,7 +42,6 @@ class PlanetRestTest {
     @Test
     void getAll_withPlanet() throws Exception {
         Planet planet = new Planet();
-        planet.setId("earth-planet");
         planet.setName("Earth");
         planet.setGravity(9.807);
         planet.setSize(6371.0);
@@ -51,11 +50,11 @@ class PlanetRestTest {
         this.mockMvc.perform(get("/planet"))
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is("earth-planet")))
+                .andExpect(jsonPath("$[0].id", is(planet.getId())))
                 .andExpect(jsonPath("$[0].name", is("Earth")))
                 .andExpect(jsonPath("$[0].gravity", is(9.807)))
                 .andExpect(jsonPath("$[0].size", is(6371.)))
-                .andExpect(jsonPath("$[0].links[0].href", endsWith("/planet/earth-planet")))
+                .andExpect(jsonPath("$[0].links[0].href", endsWith("/planet/" + planet.getId())))
                 .andExpect(jsonPath("$.moons").doesNotExist());
     }
 
@@ -66,17 +65,16 @@ class PlanetRestTest {
         var firstMoon = moonRepository.save(new Moon("first-moon-id", "First Moon", planet));
         var secondMoon = moonRepository.save(new Moon("second-moon-id", "Second Moon", planet));
 
-        this.mockMvc.perform(get("/planet/search-planet"))
+        this.mockMvc.perform(get("/planet/" + planet.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Planet we search")))
-                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.id", is(planet.getId())))
                 .andExpect(jsonPath("$.gravity", is(2.11)))
                 .andExpect(jsonPath("$.size", is(1.23)))
                 .andExpect(jsonPath("$.moons", hasSize(2)))
-                .andExpect(jsonPath("$.moons[0].id", is(firstMoon.getId())))
-                .andExpect(jsonPath("$.moons[0].name", is(firstMoon.getName())))
-                .andExpect(jsonPath("$.moons[1].id", is(secondMoon.getId())))
-                .andExpect(jsonPath("$.moons[1].name", is(secondMoon.getName())));
+                .andExpect(jsonPath("$.moons[*].id", containsInAnyOrder(firstMoon.getId(), secondMoon.getId())))
+                .andExpect(jsonPath("$.moons[*].name", containsInAnyOrder(firstMoon.getName(), secondMoon.getName())));
+
     }
 
     @Test
@@ -162,11 +160,10 @@ class PlanetRestTest {
     @Test
     void deletePlanet() throws Exception {
         Planet planet = new Planet();
-        planet.setId("delete-me-id");
         planet.setName("Planet");
         repository.save(planet);
 
-        this.mockMvc.perform(delete("/planet/delete-me-id"))
+        this.mockMvc.perform(delete("/planet/" + planet.getId()))
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(get("/planet/delete-me-id"))
@@ -180,7 +177,7 @@ class PlanetRestTest {
         var firstMoon = moonRepository.save(new Moon("first-moon-id", "First Moon", planet));
         var secondMoon = moonRepository.save(new Moon("second-moon-id", "Second Moon", planet));
 
-        this.mockMvc.perform(delete("/planet/search-planet"))
+        this.mockMvc.perform(delete("/planet/" + planet.getId()))
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(get("/planet/search-planet"))
