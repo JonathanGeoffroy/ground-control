@@ -1,8 +1,8 @@
 import { setupServer } from 'msw/node'
-import { rest } from 'msw'
-import { PlanetDetailsDTO, PlanetDTO } from '../src/__generated__/dataSources/Planet/data-contracts'
+import { ResponseComposition, rest, RestRequest } from 'msw'
+import { CreatePlanetDTO, PlanetDetailsDTO, PlanetDTO } from '../src/__generated__/dataSources/Planet/data-contracts'
 
-const planets: PlanetDetailsDTO[] = [
+const INITIAL_PLANETS: PlanetDetailsDTO[] = [
   {
     id: 'mars-id',
     name: 'Mars',
@@ -27,7 +27,14 @@ const planets: PlanetDetailsDTO[] = [
     ]
   }
 ]
-export default setupServer(
+
+let planets: PlanetDetailsDTO[] = [...INITIAL_PLANETS]
+
+afterEach(() => {
+  planets = [...INITIAL_PLANETS]
+})
+
+const mswServer = setupServer(
   rest.get('http://localhost:8080/planet',
     (req, res, ctx) =>
       res(
@@ -46,5 +53,37 @@ export default setupServer(
       ctx.status(200),
       ctx.json(planets.find(planet => planet.id === id))
     )
+  }),
+
+  rest.post('http://localhost:8080/planet', (req: RestRequest<CreatePlanetDTO>, res: ResponseComposition<PlanetDTO>, ctx) => {
+    const dto = req.body
+
+    const planet: PlanetDetailsDTO = {
+      id: Math.random().toString(),
+      name: dto.name,
+      size: dto.size,
+      gravity: dto.gravity,
+      moons: dto.moons?.map(moon => ({
+        id: Math.random().toString(),
+        name: moon.name
+      })) || []
+    }
+
+    planets.push(planet)
+
+    return res(
+      ctx.status(200),
+      ctx.json(planet)
+    )
   })
 )
+
+beforeAll(() => {
+  mswServer.listen()
+})
+
+afterAll(() => {
+  mswServer.close()
+})
+
+export default mswServer

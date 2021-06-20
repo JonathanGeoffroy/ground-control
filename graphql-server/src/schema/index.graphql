@@ -1,6 +1,6 @@
 type Moon {
     id: ID!
-    name: String
+    name: String!
 }
 
 type Planet {
@@ -8,8 +8,22 @@ type Planet {
     name: String!
     gravity: Float
     size: Float
-    moons: [Moon]
+    moons: [Moon!]
 }
 type Query {
-    planets: [Planet]
+    planets: [Planet!]
+}
+input CreateMoon {
+    name: String!
+}
+
+input  CreatePlanet {
+    name: String!
+    gravity: Float
+    size: Float
+    moons: [CreateMoon!]
+}
+
+type Mutation {
+    createPlanet(planet: CreatePlanet!): Planet
 }

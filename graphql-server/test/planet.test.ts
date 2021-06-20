@@ -1,19 +1,11 @@
 import server from '../src/server'
 // @ts-ignore
-import mswServer from './planet.msw'
+import './planet.msw'
 import { Planet } from '../src/__generated__/graphql'
 
 const app = server()
-
-beforeAll(async () => {
-  mswServer.listen()
-  await app.listen()
-})
-
-afterAll(async () => {
-  mswServer.close()
-  return await app.stop()
-})
+beforeAll(() => app.listen())
+afterAll(() => app.stop())
 
 it('handles planets', async () => {
   const result = await app.executeOperation({

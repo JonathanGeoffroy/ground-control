@@ -25,6 +25,8 @@ const describeReturnType = () => {
     return `Promise<${type}>`
 }
 
+const bodyTmpl = _.get(payload, "name") || null;
+
 %>
 /**
 <%~ routeDocs.description %>
@@ -34,7 +36,7 @@ const describeReturnType = () => {
 <%~ routeDocs.lines %>
  */
 async <%~ route.routeName.usage == "delete" ? `${route.routeName.usage}${apiClassName}` : route.routeName.usage %>(<%~ wrapperArgs %>): <%~ describeReturnType() %> {
-    return this.<%~method %><<%~ type %>>(`<%~ path %>`);
+    return this.<%~method %><<%~ type %>>(`<%~ path %>`<%~ bodyTmpl ? `, ${bodyTmpl}` : ''%>);
 }
 
 

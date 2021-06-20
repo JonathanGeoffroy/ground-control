@@ -3,3 +3,4 @@ scripts/generate/schemas
 node_modules
 dist
 graphql.schema.json
+coverage
