@@ -38,6 +38,116 @@ class PlanetRestTest {
   }
 
   @Test
+  void getPaginated_order() throws Exception {
+    var planetNames =
+        new String[] {
+          "c-planet", "a-planet", "d-planet", "b-planet",
+        };
+    for (String name : planetNames) {
+      Planet planet = new Planet();
+      planet.setName(name);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=3&page=0"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(3)))
+        .andExpect(jsonPath("$[0].name", is("a-planet")))
+        .andExpect(jsonPath("$[1].name", is("b-planet")))
+        .andExpect(jsonPath("$[2].name", is("c-planet")));
+  }
+
+  @Test
+  void getPaginated_firstPage() throws Exception {
+    for (int i = 0; i < 8; i++) {
+      Planet planet = new Planet();
+      planet.setName("planet-" + i);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=4&page=0"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(4)))
+        .andExpect(jsonPath("$[0].name", is("planet-0")))
+        .andExpect(jsonPath("$[1].name", is("planet-1")))
+        .andExpect(jsonPath("$[2].name", is("planet-2")))
+        .andExpect(jsonPath("$[3].name", is("planet-3")));
+  }
+
+  @Test
+  void getPaginated_secondPage() throws Exception {
+    for (int i = 0; i < 10; i++) {
+      Planet planet = new Planet();
+      planet.setName("planet-" + i);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=4&page=1"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(4)))
+        .andExpect(jsonPath("$[0].name", is("planet-4")))
+        .andExpect(jsonPath("$[1].name", is("planet-5")))
+        .andExpect(jsonPath("$[2].name", is("planet-6")))
+        .andExpect(jsonPath("$[3].name", is("planet-7")));
+  }
+
+  @Test
+  void getPaginated_lastPage_fullPage() throws Exception {
+    for (int i = 0; i < 9; i++) {
+      Planet planet = new Planet();
+      planet.setName("planet-" + i);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=3&page=2"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(3)))
+        .andExpect(jsonPath("$[0].name", is("planet-6")))
+        .andExpect(jsonPath("$[1].name", is("planet-7")))
+        .andExpect(jsonPath("$[2].name", is("planet-8")));
+  }
+
+  @Test
+  void getPaginated_lastPage_notFullPage() throws Exception {
+    for (int i = 0; i < 8; i++) {
+      Planet planet = new Planet();
+      planet.setName("planet-" + i);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=3&page=2"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("planet-6")))
+        .andExpect(jsonPath("$[1].name", is("planet-7")));
+  }
+
+  @Test
+  void getPaginated_lastPage_outOfPage() throws Exception {
+    for (int i = 0; i < 11; i++) {
+      Planet planet = new Planet();
+      planet.setName("planet-" + i);
+      repository.save(planet);
+    }
+    repository.flush();
+
+    this.mockMvc
+        .perform(get("/planet/paginated?size=3&page=4"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(0)));
+  }
+
+  @Test
   void getAll_withPlanet() throws Exception {
     Planet planet = new Planet();
     planet.setName("Earth");

@@ -6,6 +6,9 @@ import ground.control.planet.exception.NotFoundEntityException;
 import ground.control.planet.repository.PlanetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -50,5 +53,9 @@ public class PlanetService {
     } catch (EmptyResultDataAccessException e) {
       throw new NotFoundEntityException();
     }
+  }
+
+  public Page<Planet> getPaginated(int page, int size) {
+    return repository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name")));
   }
 }

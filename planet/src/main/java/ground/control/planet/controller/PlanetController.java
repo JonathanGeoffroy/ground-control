@@ -46,6 +46,21 @@ public class PlanetController {
         .collect(Collectors.toList());
   }
 
+  @Operation(summary = "Paginated planets")
+  @GetMapping(value = "/paginated", produces = "application/hal+json")
+  public List<PlanetDTO> getPaginated(
+      @RequestParam("page") int page, @RequestParam("size") int size) {
+    return service.getPaginated(page, size).stream()
+        .map(
+            planet ->
+                modelMapper
+                    .map(planet, PlanetDTO.class)
+                    .add(
+                        linkTo(methodOn(PlanetController.class).getDetails(planet.getId()))
+                            .withSelfRel()))
+        .collect(Collectors.toList());
+  }
+
   @Operation(summary = "Get planet details")
   @GetMapping("/{id}")
   public PlanetDetailsDTO getDetails(@PathVariable String id) {
