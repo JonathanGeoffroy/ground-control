@@ -1,6 +1,5 @@
 package ground.control.planet.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +15,11 @@ import java.util.List;
 @Getter
 @Setter
 public class CreatePlanetDTO {
-    @NotNull
-    @NotBlank
-    private String name;
+  @NotNull @NotBlank private String name;
 
-    private Double gravity;
+  private Double gravity;
 
-    private Double size;
+  private Double size;
 
-    @Valid
-    private List<CreateMoonDTO> moons;
+  @Valid private List<CreateMoonDTO> moons;
 }

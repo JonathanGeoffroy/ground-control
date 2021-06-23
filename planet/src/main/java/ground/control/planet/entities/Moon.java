@@ -14,18 +14,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class Moon {
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private String id;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  private String id;
 
-    @Column
-    private String name;
+  @Column private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn
-    private Planet planet;
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn
+  private Planet planet;
 }

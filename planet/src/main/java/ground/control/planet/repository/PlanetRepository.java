@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PlanetRepository extends JpaRepository<Planet, String> {
-    @EntityGraph(value = Planet.PLANET_DETAILS_GRAPH)
-    Optional<Planet> findById(String id);
+  @EntityGraph(value = Planet.PLANET_DETAILS_GRAPH)
+  Optional<Planet> findById(String id);
 }

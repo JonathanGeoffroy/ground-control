@@ -19,51 +19,51 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-
 @RestController
 @RequestMapping("/planet")
 @Tag(name = "Index", description = "the Index API")
 public class PlanetController {
-    private final PlanetService service;
-    private final ModelMapper modelMapper;
+  private final PlanetService service;
+  private final ModelMapper modelMapper;
 
-    @Autowired
-    public PlanetController(PlanetService service, ModelMapper modelMapper) {
-        this.service = service;
-        this.modelMapper = modelMapper;
-    }
+  @Autowired
+  public PlanetController(PlanetService service, ModelMapper modelMapper) {
+    this.service = service;
+    this.modelMapper = modelMapper;
+  }
 
-    @Operation(summary = "Get all planets of the universe")
-    @GetMapping(produces = "application/hal+json")
-    public List<PlanetDTO> getAll() {
-        return service.getAll()
-                .parallelStream()
-                .map(planet -> modelMapper.map(planet, PlanetDTO.class)
-                        .add(linkTo(methodOn(PlanetController.class).getDetails(planet.getId())).withSelfRel())
-                )
-                .collect(Collectors.toList());
-    }
+  @Operation(summary = "Get all planets of the universe")
+  @GetMapping(produces = "application/hal+json")
+  public List<PlanetDTO> getAll() {
+    return service.getAll().parallelStream()
+        .map(
+            planet ->
+                modelMapper
+                    .map(planet, PlanetDTO.class)
+                    .add(
+                        linkTo(methodOn(PlanetController.class).getDetails(planet.getId()))
+                            .withSelfRel()))
+        .collect(Collectors.toList());
+  }
 
+  @Operation(summary = "Get planet details")
+  @GetMapping("/{id}")
+  public PlanetDetailsDTO getDetails(@PathVariable String id) {
+    var planet = service.findById(id);
+    return modelMapper.map(planet, PlanetDetailsDTO.class);
+  }
 
-    @Operation(summary = "Get planet details")
-    @GetMapping("/{id}")
-    public PlanetDetailsDTO getDetails(@PathVariable String id) {
-        var planet = service.findById(id);
-        return modelMapper.map(planet, PlanetDetailsDTO.class);
-    }
+  @Operation(summary = "Create a new planet")
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public PlanetDetailsDTO create(@Valid @RequestBody CreatePlanetDTO dto) {
+    var planet = service.create(modelMapper.map(dto, Planet.class));
+    return modelMapper.map(planet, PlanetDetailsDTO.class);
+  }
 
-    @Operation(summary = "Create a new planet")
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-
-    public PlanetDetailsDTO create(@Valid @RequestBody CreatePlanetDTO dto) {
-        var planet = service.create(modelMapper.map(dto, Planet.class));
-        return modelMapper.map(planet, PlanetDetailsDTO.class);
-    }
-
-    @Operation(summary = "Delete an existing planet")
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
-        service.deleteById(id);
-    }
+  @Operation(summary = "Delete an existing planet")
+  @DeleteMapping("/{id}")
+  public void delete(@PathVariable String id) {
+    service.deleteById(id);
+  }
 }

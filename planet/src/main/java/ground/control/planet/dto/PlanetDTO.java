@@ -11,10 +11,8 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode(callSuper = false)
 public class PlanetDTO extends RepresentationModel<PlanetDTO> {
-    @NotNull
-    private String id;
-    @NotNull
-    private String name;
-    private Double size;
-    private Double gravity;
+  @NotNull private String id;
+  @NotNull private String name;
+  private Double size;
+  private Double gravity;
 }

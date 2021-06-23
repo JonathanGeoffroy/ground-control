@@ -13,7 +13,5 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class CreateMoonDTO {
-    @NotNull
-    @NotBlank
-    private String name;
+  @NotNull @NotBlank private String name;
 }

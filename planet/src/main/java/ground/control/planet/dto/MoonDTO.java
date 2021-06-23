@@ -12,9 +12,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class MoonDTO {
-    @NotNull
-    private String id;
+  @NotNull private String id;
 
-    @NotNull
-    private String name;
+  @NotNull private String name;
 }

@@ -10,5 +10,5 @@ import java.util.List;
 @Getter
 @Setter
 public class PlanetDetailsDTO extends PlanetDTO {
-    private List<MoonDTO> moons;
+  private List<MoonDTO> moons;
 }

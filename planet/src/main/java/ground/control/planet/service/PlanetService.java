@@ -14,41 +14,41 @@ import java.util.List;
 
 @Service
 public class PlanetService {
-    private final PlanetRepository repository;
+  private final PlanetRepository repository;
 
-    @Autowired
-    public PlanetService(PlanetRepository repository) {
-        this.repository = repository;
+  @Autowired
+  public PlanetService(PlanetRepository repository) {
+    this.repository = repository;
+  }
+
+  public List<Planet> getAll() {
+    return repository.findAll();
+  }
+
+  public Planet findById(String planetId) throws NotFoundEntityException {
+    var planet = repository.findById(planetId);
+
+    if (planet.isEmpty()) {
+      throw new NotFoundEntityException();
     }
+    return planet.get();
+  }
 
-    public List<Planet> getAll() {
-        return repository.findAll();
+  @Transactional
+  public Planet create(Planet planet) {
+    if (!CollectionUtils.isEmpty(planet.getMoons())) {
+      for (Moon moon : planet.getMoons()) {
+        moon.setPlanet(planet);
+      }
     }
+    return repository.save(planet);
+  }
 
-    public Planet findById(String planetId) throws NotFoundEntityException {
-        var planet = repository.findById(planetId);
-
-        if (planet.isEmpty()) {
-            throw new NotFoundEntityException();
-        }
-        return planet.get();
+  public void deleteById(String planetId) throws NotFoundEntityException {
+    try {
+      repository.deleteById(planetId);
+    } catch (EmptyResultDataAccessException e) {
+      throw new NotFoundEntityException();
     }
-
-    @Transactional
-    public Planet create(Planet planet) {
-        if (!CollectionUtils.isEmpty(planet.getMoons())) {
-            for (Moon moon : planet.getMoons()) {
-                moon.setPlanet(planet);
-            }
-        }
-        return repository.save(planet);
-    }
-
-    public void deleteById(String planetId) throws NotFoundEntityException {
-        try {
-            repository.deleteById(planetId);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundEntityException();
-        }
-    }
+  }
 }
