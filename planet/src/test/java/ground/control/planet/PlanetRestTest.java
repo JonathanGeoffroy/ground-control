@@ -53,10 +53,16 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=3&page=0"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("a-planet")))
-        .andExpect(jsonPath("$[1].name", is("b-planet")))
-        .andExpect(jsonPath("$[2].name", is("c-planet")));
+        .andExpect(jsonPath("$._embedded.planetDTOList", hasSize(3)))
+        .andExpect(jsonPath("$._embedded.planetDTOList[0].name", is("a-planet")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[1].name", is("b-planet")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[2].name", is("c-planet")))
+        .andExpect(jsonPath("$.page.size", is(3)))
+        .andExpect(jsonPath("$.page.number", is(0)))
+        .andExpect(jsonPath("$.page.totalPages", is(2)))
+        .andExpect(jsonPath("$.page.totalElements", is(4)))
+        .andExpect(jsonPath("$._links.previous.href").doesNotExist())
+        .andExpect(jsonPath("$._links.next.href", endsWith("page=1&size=3")));
   }
 
   @Test
@@ -71,11 +77,17 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=4&page=0"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(4)))
-        .andExpect(jsonPath("$[0].name", is("planet-0")))
-        .andExpect(jsonPath("$[1].name", is("planet-1")))
-        .andExpect(jsonPath("$[2].name", is("planet-2")))
-        .andExpect(jsonPath("$[3].name", is("planet-3")));
+        .andExpect(jsonPath("$._embedded.planetDTOList", hasSize(4)))
+        .andExpect(jsonPath("$._embedded.planetDTOList[0].name", is("planet-0")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[1].name", is("planet-1")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[2].name", is("planet-2")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[3].name", is("planet-3")))
+        .andExpect(jsonPath("$.page.size", is(4)))
+        .andExpect(jsonPath("$.page.number", is(0)))
+        .andExpect(jsonPath("$.page.totalPages", is(2)))
+        .andExpect(jsonPath("$.page.totalElements", is(8)))
+        .andExpect(jsonPath("$._links.previous.href").doesNotExist())
+        .andExpect(jsonPath("$._links.next.href", endsWith("page=1&size=4")));
   }
 
   @Test
@@ -90,11 +102,18 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=4&page=1"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(4)))
-        .andExpect(jsonPath("$[0].name", is("planet-4")))
-        .andExpect(jsonPath("$[1].name", is("planet-5")))
-        .andExpect(jsonPath("$[2].name", is("planet-6")))
-        .andExpect(jsonPath("$[3].name", is("planet-7")));
+        .andExpect(jsonPath("$._embedded.planetDTOList", hasSize(4)))
+        .andExpect(jsonPath("$._embedded.planetDTOList[0].name", is("planet-4")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[1].name", is("planet-5")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[2].name", is("planet-6")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[3].name", is("planet-7")))
+        .andExpect(jsonPath("$.page.size", is(4)))
+        .andExpect(jsonPath("$.page.number", is(1)))
+        .andExpect(jsonPath("$.page.totalPages", is(3)))
+        .andExpect(jsonPath("$.page.totalElements", is(10)))
+        .andExpect(jsonPath("$._links.previous.href", endsWith("page=0&size=4")))
+        .andExpect(jsonPath("$._links.next.href", endsWith("page=2&size=4")));
+    ;
   }
 
   @Test
@@ -109,10 +128,16 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=3&page=2"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("planet-6")))
-        .andExpect(jsonPath("$[1].name", is("planet-7")))
-        .andExpect(jsonPath("$[2].name", is("planet-8")));
+        .andExpect(jsonPath("$._embedded.planetDTOList", hasSize(3)))
+        .andExpect(jsonPath("$._embedded.planetDTOList[0].name", is("planet-6")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[1].name", is("planet-7")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[2].name", is("planet-8")))
+        .andExpect(jsonPath("$.page.size", is(3)))
+        .andExpect(jsonPath("$.page.number", is(2)))
+        .andExpect(jsonPath("$.page.totalPages", is(3)))
+        .andExpect(jsonPath("$.page.totalElements", is(9)))
+        .andExpect(jsonPath("$._links.previous.href", endsWith("page=1&size=3")))
+        .andExpect(jsonPath("$._links.next").doesNotExist());
   }
 
   @Test
@@ -127,9 +152,15 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=3&page=2"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(2)))
-        .andExpect(jsonPath("$[0].name", is("planet-6")))
-        .andExpect(jsonPath("$[1].name", is("planet-7")));
+        .andExpect(jsonPath("$._embedded.planetDTOList", hasSize(2)))
+        .andExpect(jsonPath("$._embedded.planetDTOList[0].name", is("planet-6")))
+        .andExpect(jsonPath("$._embedded.planetDTOList[1].name", is("planet-7")))
+        .andExpect(jsonPath("$.page.size", is(3)))
+        .andExpect(jsonPath("$.page.number", is(2)))
+        .andExpect(jsonPath("$.page.totalPages", is(3)))
+        .andExpect(jsonPath("$.page.totalElements", is(8)))
+        .andExpect(jsonPath("$._links.previous.href", endsWith("page=1&size=3")))
+        .andExpect(jsonPath("$._links.next").doesNotExist());
   }
 
   @Test
@@ -144,7 +175,7 @@ class PlanetRestTest {
     this.mockMvc
         .perform(get("/planet/paginated?size=3&page=4"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(0)));
+        .andExpect(jsonPath("$._embedded.planetDTOList").doesNotExist());
   }
 
   @Test
