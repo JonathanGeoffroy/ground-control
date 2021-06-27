@@ -1,20 +1,30 @@
 {
   "env": {
+    "browser": true,
     "es2021": true,
-    "jest/globals": true
+    "cypress/globals": true
   },
   "extends": [
     "standard",
     "plugin:react/recommended",
-    "plugin:tailwind/recommended"
+    "plugin:tailwind/recommended",
+    "plugin:cypress/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "jest", "react"],
-  "ignorePatterns": ["dist", "**/__generated__", "*.html"],
+  "plugins": ["react", "@typescript-eslint", "cypress"],
+  "ignorePatterns": ["dist", "**/__generated__"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"]
+  },
   "settings": {
     "react": {
       "version": "detect"

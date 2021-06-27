@@ -8,10 +8,10 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.23",
     "@types/node": "^12.20.15",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
+    "cypress": "^7.6.0",
     "graphql": "^15.5.1",
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
@@ -21,10 +21,13 @@
   },
   "scripts": {
     "start": "craco start",
+    "cy:run": "cypress run",
+    "cy:open": "cypress open",
+    "start:tdd": "start-server-and-test start http://localhost:3000 cy:open",
+    "test": "start-server-and-test start http://localhost:3000 cy:run",
     "build": "craco build",
-    "test": "craco test",
     "eject": "react-scripts eject",
-    "lint": "eslint .",
+    "lint": "eslint . --ext=.jsx,.js,.tsx,.ts",
     "lint:fix": "npm run lint -- --fix"
   },
   "eslintConfig": {
@@ -46,16 +49,21 @@
     ]
   },
   "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "autoprefixer": "^9.8.6",
     "eslint": "^7.29.0",
     "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-tailwind": "^0.2.1",
     "postcss": "^7.0.36",
+    "start-server-and-test": "^1.12.5",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.4",
     "typescript": "^4.3.4"
   }
