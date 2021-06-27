@@ -1,6 +1,15 @@
 import { setupServer } from 'msw/node'
 import { ResponseComposition, rest, RestRequest } from 'msw'
-import { CreatePlanetDTO, PlanetDetailsDTO, PlanetDTO } from '../src/__generated__/dataSources/Planet/data-contracts'
+import {
+  CreatePlanetDTO,
+  PagedModelPlanetDTO,
+  PlanetDetailsDTO,
+  PlanetDTO
+} from '../src/__generated__/dataSources/Planet/data-contracts'
+
+import config from '../src/config'
+
+const { SERVICE_PLANET: baseUrl } = config
 
 const INITIAL_PLANETS: PlanetDetailsDTO[] = [
   {
@@ -34,20 +43,40 @@ afterEach(() => {
   planets = [...INITIAL_PLANETS]
 })
 
+function paginate (page: number, size: number) {
+  return planets.slice(page * size, (page + 1) * size)
+}
+
 const mswServer = setupServer(
-  rest.get('http://localhost:8080/planet',
-    (req, res, ctx) =>
-      res(
+  rest.get(`${baseUrl}/planet/paginated`,
+    (req, res, ctx) => {
+      const page = Number.parseInt(req.url.searchParams.get('page')) || 0
+      const size = Number.parseInt(req.url.searchParams.get('size')) || 20
+      const paginated = paginate(page, size)
+
+      return res(
         ctx.status(200),
-        ctx.json<PlanetDTO[]>(planets.map(planet => ({
-          id: planet.id,
-          name: planet.name,
-          gravity: planet.gravity,
-          size: planet.size
-        })))
+        ctx.json<PagedModelPlanetDTO>({
+          _embedded: {
+            planetDTOList: paginated.map(planet => ({
+              id: planet.id,
+              name: planet.name,
+              gravity: planet.gravity,
+              size: planet.size
+            }))
+          },
+          _links: paginate(page + 1, size).length
+            ? {
+                next: {
+                  href: `${baseUrl}/planet/paginated?page=${page + 1}&size=${size}`
+                }
+              }
+            : undefined
+        })
       )
+    }
   ),
-  rest.get('http://localhost:8080/planet/:id', (req, res, ctx) => {
+  rest.get(`${baseUrl}/planet/:id`, (req, res, ctx) => {
     const { id } = req.params
     return res(
       ctx.status(200),
@@ -55,7 +84,7 @@ const mswServer = setupServer(
     )
   }),
 
-  rest.post('http://localhost:8080/planet', (req: RestRequest<CreatePlanetDTO>, res: ResponseComposition<PlanetDTO>, ctx) => {
+  rest.post(`${baseUrl}/planet`, (req: RestRequest<CreatePlanetDTO>, res: ResponseComposition<PlanetDTO>, ctx) => {
     const dto = req.body
 
     const planet: PlanetDetailsDTO = {

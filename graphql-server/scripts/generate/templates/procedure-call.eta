@@ -27,6 +27,9 @@ const describeReturnType = () => {
 
 const bodyTmpl = _.get(payload, "name") || null;
 
+const queryName = (query && query.name) || "query";
+const queryTmpl = (query != null && queryName) || null;
+
 %>
 /**
 <%~ routeDocs.description %>
@@ -36,7 +39,7 @@ const bodyTmpl = _.get(payload, "name") || null;
 <%~ routeDocs.lines %>
  */
 async <%~ route.routeName.usage == "delete" ? `${route.routeName.usage}${apiClassName}` : route.routeName.usage %>(<%~ wrapperArgs %>): <%~ describeReturnType() %> {
-    return this.<%~method %><<%~ type %>>(`<%~ path %>`<%~ bodyTmpl ? `, ${bodyTmpl}` : ''%>);
+    return this.<%~method %><<%~ type %>>(`<%~ path %>`<%~ bodyTmpl ? `, ${bodyTmpl}` : ''%><%~ queryTmpl ? `, ${queryTmpl}` : ''%>);
 }
 
 

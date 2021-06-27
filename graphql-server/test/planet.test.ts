@@ -9,10 +9,18 @@ afterAll(() => app.stop())
 
 it('handles planets', async () => {
   const result = await app.executeOperation({
-    query: '{planets {id, name}}'
+    query: `
+    {
+      planets {
+        data {
+          id
+          name
+        }
+      }
+    }`
   })
   expect(result.errors).toBeUndefined()
-  expect(result.data?.planets).toEqual<Planet[]>([
+  expect(result.data?.planets.data).toEqual<Planet[]>([
     {
       id: 'mars-id',
       name: 'Mars'
@@ -25,10 +33,24 @@ it('handles planets', async () => {
 
 it('handle planet details', async () => {
   const result = await app.executeOperation({
-    query: '{planets {id, name, gravity, size, moons{id, name}}}'
+    query: `
+    {
+      planets {
+        data {
+          id
+          name
+          gravity
+          size
+          moons {
+            id
+            name
+          }
+        }
+      }
+    }`
   })
   expect(result.errors).toBeUndefined()
-  expect(result.data?.planets).toEqual<Planet[]>([
+  expect(result.data?.planets.data).toEqual<Planet[]>([
     {
       id: 'mars-id',
       name: 'Mars',
@@ -49,4 +71,61 @@ it('handle planet details', async () => {
       }]
     }
   ])
+})
+
+it('handles pagination', async () => {
+  const result = await app.executeOperation({
+    query: `
+    {
+      planets(page:0, size: 1) {
+        data {
+          id
+          name
+        },
+        nextCursor {
+          page
+          size
+        }
+      }
+    }`
+  })
+
+  expect(result.errors).toBeUndefined()
+  expect(result.data?.planets.data).toEqual<Planet[]>([
+    {
+      id: 'mars-id',
+      name: 'Mars'
+    }
+  ])
+  expect(result.data?.planets.nextCursor).toEqual({
+    page: 1,
+    size: 1
+  })
+})
+
+it('handles last page', async () => {
+  const result = await app.executeOperation({
+    query: `
+    {
+      planets(page:1, size: 1) {
+        data {
+          id
+          name
+        },
+        nextCursor {
+          page
+          size
+        }
+      }
+    }`
+  })
+
+  expect(result.errors).toBeUndefined()
+  expect(result.data?.planets.data).toEqual<Planet[]>([
+    {
+      id: 'venus-id',
+      name: 'Venus'
+    }
+  ])
+  expect(result.data?.planets.nextCursor).toBeNull()
 })

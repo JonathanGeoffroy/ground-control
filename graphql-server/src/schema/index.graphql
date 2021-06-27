@@ -10,8 +10,19 @@ type Planet {
     size: Float
     moons: [Moon!]
 }
+
+type Page {
+    page: Int!
+    size: Int!
+}
+
+type PlanetPage {
+    data: [Planet!]
+    nextCursor: Page
+}
+
 type Query {
-    planets: [Planet!]
+    planets(page: Int, size: Int): PlanetPage
 }
 input CreateMoon {
     name: String!
