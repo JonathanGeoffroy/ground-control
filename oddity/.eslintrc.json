@@ -1,0 +1,23 @@
+{
+  "env": {
+    "es2021": true,
+    "jest/globals": true
+  },
+  "extends": [
+    "standard",
+    "plugin:react/recommended",
+    "plugin:tailwind/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "jest", "react"],
+  "ignorePatterns": ["dist", "**/__generated__", "*.html"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
