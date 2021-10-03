@@ -1,9 +1,11 @@
 package space.oddity.planet.dto;
 
 import lombok.*;
+import space.oddity.planet.entities.Element;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @Data
 @Builder
@@ -17,4 +19,6 @@ public class CreatePlanetDTO {
   private Double weight;
 
   private Double gravity;
+
+  private Map<Element, Long> composition;
 }

@@ -2,6 +2,7 @@ package space.oddity.planet;
 
 import space.oddity.planet.dto.CreatePlanetDTO;
 import space.oddity.planet.dto.PlanetDTO;
+import space.oddity.planet.dto.PlanetDetailsDTO;
 import space.oddity.planet.entities.Planet;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/planet/v1")
 public class PlanetResource {
@@ -26,6 +28,12 @@ public class PlanetResource {
       @DefaultValue("0") @QueryParam("index") int index,
       @DefaultValue("10") @QueryParam("size") int size) {
     return mapper.toDtoList(planetService.page(index, size));
+  }
+
+  @GET
+  @Path("/{id}")
+  public PlanetDetailsDTO details(@PathParam("id") UUID id) {
+    return mapper.toDetailsDTO(planetService.find(id));
   }
 
   @POST

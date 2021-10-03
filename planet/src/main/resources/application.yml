@@ -1,5 +1,6 @@
-greeting:
-  message: "hello"
+app:
+  random:
+   # seed: 1001389
 quarkus:
   banner:
     path: banner.txt
@@ -8,3 +9,5 @@ quarkus:
   hibernate-orm:
     database:
       generation: drop-and-create
+      log:
+        sql: true
