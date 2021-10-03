@@ -5,10 +5,10 @@ import space.oddity.planet.entities.Planet;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,16 +37,14 @@ public class PlanetService {
         .boxed()
         .collect(
             Collectors.toMap(
-                    i -> values[random.nextInt(values.length)],
-                    i -> positiveNumber(),
-                    (a, b) -> a));
+                i -> values[random.nextInt(values.length)], i -> positiveNumber(), (a, b) -> a));
   }
 
   private long positiveNumber() {
     return random.nextLong() & Long.MAX_VALUE;
   }
 
-  public Planet find(UUID id) {
-    return Planet.findById(id);
+  public Planet find(String id) {
+    return Planet.<Planet>findByIdOptional(id).orElseThrow(NotFoundException::new);
   }
 }

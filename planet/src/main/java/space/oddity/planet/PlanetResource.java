@@ -13,7 +13,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 
 @Path("/planet/v1")
 public class PlanetResource {
@@ -32,7 +31,7 @@ public class PlanetResource {
 
   @GET
   @Path("/{id}")
-  public PlanetDetailsDTO details(@PathParam("id") UUID id) {
+  public PlanetDetailsDTO details(@PathParam("id") String id) {
     return mapper.toDetailsDTO(planetService.find(id));
   }
 
