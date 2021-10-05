@@ -1,101 +1,24 @@
 package space.oddity.planet;
 
-import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import space.oddity.planet.dto.CreatePlanetDTO;
 import space.oddity.planet.entities.Element;
-import space.oddity.planet.entities.Planet;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.Map;
-import java.util.Random;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @QuarkusTest
-class PlanetResourceTest {
-  @Inject Random random;
-
-  @Transactional
-  static void empty() {
-    for (var p : Planet.findAll().list()) {
-      p.delete();
-    }
-  }
-
-  @BeforeEach
-  void mock() {
-    random = Mockito.mock(Random.class);
-    QuarkusMock.installMockForType(random, Random.class);
-  }
-
-  @AfterEach
-  void resetAfter() {
-    empty();
-  }
+class PlanetResourceCreateTest extends AbstractRunner {
 
   @Test
-  void emptyWorld() {
-    given().when().get("/planet/v1").then().statusCode(200).body("", hasSize(0));
-  }
-
-  @Test
-  void pagination() {
-    for (double i = 0.; i < 10.; i++) {
-      CreatePlanetDTO create =
-          CreatePlanetDTO.builder()
-              .name(String.format("planet-%s", (int) i))
-              .gravity(i)
-              .radius(2d * i)
-              .weight(3d * i)
-              .build();
-
-      given()
-          .contentType(ContentType.JSON)
-          .when()
-          .body(create)
-          .post("/planet/v1")
-          .then()
-          .assertThat()
-          .statusCode(201);
-    }
-
-    given()
-        .contentType(ContentType.JSON)
-        .when()
-        .queryParam("size", 3)
-        .get("/planet/v1")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .body("", hasSize(3))
-        .body("[0].name", equalTo("planet-9"))
-        .body("[1].name", equalTo("planet-8"))
-        .body("[2].name", equalTo("planet-7"));
-
-    given()
-        .contentType(ContentType.JSON)
-        .when()
-        .queryParam("size", 5)
-        .queryParam("index", 1)
-        .get("/planet/v1")
-        .then()
-        .assertThat()
-        .statusCode(200)
-        .body("", hasSize(5))
-        .body("[0].name", equalTo("planet-4"))
-        .body("[1].name", equalTo("planet-3"))
-        .body("[2].name", equalTo("planet-2"))
-        .body("[3].name", equalTo("planet-1"))
-        .body("[4].name", equalTo("planet-0"));
+  void planetCreationEmptyBody() {
+    given().contentType(ContentType.JSON).when().body("").post("planet/v1").then().statusCode(400);
   }
 
   @Test
@@ -181,6 +104,17 @@ class PlanetResourceTest {
   }
 
   @Test
+  void planetCreationWithoutName() {
+    given()
+        .contentType(ContentType.JSON)
+        .when()
+        .body(CreatePlanetDTO.builder().gravity(9.8).radius(1.2).weight(2.2).build())
+        .post("planet/v1")
+        .then()
+        .statusCode(400);
+  }
+
+  @Test
   void planetCreationAllFields() {
     given()
         .contentType(ContentType.JSON)
@@ -205,64 +139,32 @@ class PlanetResourceTest {
   }
 
   @Test
-  void planetCreationEmptyBody() {
-    given().contentType(ContentType.JSON).when().body("").post("planet/v1").then().statusCode(400);
-  }
-
-  @Test
-  void planetCreationWithoutName() {
+  void planetCreationUnknownCompositionIssue() {
     given()
         .contentType(ContentType.JSON)
         .when()
-        .body(CreatePlanetDTO.builder().gravity(9.8).radius(1.2).weight(2.2).build())
-        .post("planet/v1")
+        .body("{\"name\": \"Earth\", \"composition\": {\"UNKNOWN\": 3}}")
+        .post("/planet/v1")
         .then()
+        .assertThat()
         .statusCode(400);
   }
 
   @Test
-  void planetDetails() {
-    String id =
-        given()
-            .contentType(ContentType.JSON)
-            .when()
-            .body(
-                CreatePlanetDTO.builder()
-                    .gravity(9.807)
-                    .radius(6371.)
-                    .weight(5.972e24)
-                    .name("Earth")
-                    .composition(Map.of(Element.H, 1234L, Element.ZN, 1111L))
-                    .build())
-            .post("/planet/v1")
-            .then()
-            .assertThat()
-            .statusCode(201)
-            .body("id", notNullValue())
-            .and()
-            .extract()
-            .body()
-            .jsonPath()
-            .getString("id");
-
+  void planetCreationNegativeCompositionIssue() {
     given()
+        .contentType(ContentType.JSON)
         .when()
-        .get("/planet/v1/" + id)
+        .body(
+            CreatePlanetDTO.builder()
+                .gravity(9.807)
+                .name("Earth")
+                .composition(Map.of(Element.K, 3333L, Element.BK, -1L))
+                .build())
+        .post("/planet/v1")
         .then()
         .assertThat()
-        .statusCode(200)
-        .body("id", notNullValue())
-        .body("name", equalTo("Earth"))
-        .body("gravity", equalTo(9.807F))
-        .body("radius", equalTo(6371.F))
-        .body("weight", equalTo(5.972e24F))
-        .body("composition.size()", is(2))
-        .body("composition.H", is(1234))
-        .body("composition.ZN", is(1111));
-  }
-
-  @Test
-  void planetDetailsNotFound() {
-    given().when().get("/planet/v1/not-found").then().assertThat().statusCode(404);
+        .statusCode(400)
+        .body("error", is("Asked modification would result in negative number of element(s)"));
   }
 }

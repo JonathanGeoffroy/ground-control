@@ -3,6 +3,7 @@ package space.oddity.planet;
 import space.oddity.planet.dto.CreatePlanetDTO;
 import space.oddity.planet.dto.PlanetDTO;
 import space.oddity.planet.dto.PlanetDetailsDTO;
+import space.oddity.planet.entities.Element;
 import space.oddity.planet.entities.Planet;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Path("/planet/v1")
 public class PlanetResource {
@@ -42,5 +44,14 @@ public class PlanetResource {
     return Response.created(URI.create("/planet/v1/" + entity.getId()))
         .entity(mapper.toDetailsDTO(entity))
         .build();
+  }
+
+  @PATCH
+  @Path("/{id}")
+  @Transactional
+  public PlanetDetailsDTO updateComposition(
+          @NotNull(message = "id must be provided") @PathParam("id") String id,
+          @Valid @NotNull(message = "body must not be empty") Map<Element, Long>  composition) {
+    return mapper.toDetailsDTO(planetService.updateComposition(id, composition));
   }
 }
